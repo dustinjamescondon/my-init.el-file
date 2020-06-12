@@ -1,18 +1,46 @@
+(require 'package)
 
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
+ '(ansi-color-names-vector
+   ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
+ '(custom-enabled-themes (quote (tsdh-dark)))
+ '(inhibit-startup-screen t)
+ '(package-selected-packages
+   (quote
+    (company-irony projectile-git-autofetch projectile magit clang-format+ clang-format git cmake-mode glsl-mode fireplace column-enforce-mode company-rtags rtags rtags-xref flycheck eyebrowse ctags-update auto-complete-clang-async)))
+ '(send-mail-function (quote mailclient-send-it)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+
+;;;------------------------------------------------------------------------------------------
 ;;; Commentary: MY OWN ADDITIONS
-;;----------------------
+;;-------------------------------------------------------------------------------------------
 
 ;;; Code:
-;;(push '("melpa" .  "https://melpa.org/packages/") package-archives)
+
 
 ;; Add the hidden directory in emacs home directory to load any plain
 ;; lisp scripts
 (push '"/home/dustin/.emacs_scripts" load-path)
-
-;; for the rtags peek functionality
-;; (require 'semantic)
-;; (require 'rtags)
-;; (require 'eyebrowse)
 
 ;; Clang stuff
 (require 'clang-format)
