@@ -1,9 +1,20 @@
 (require 'package)
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  (when no-ssl (warn "\
+Your version of Emacs does not support SSL connections,
+which is unsafe because it allows man-in-the-middle attacks.
+There are two things you can do about this warning:
+1. Install an Emacs version that does support SSL and be safe.
+2. Remove this warning from your init file so you won't see it again."))
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+  ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
+  ;; and `package-pinned-packages`. Most users will not need or want to do this.
+  ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+  )
 (package-initialize)
 
 
@@ -17,12 +28,11 @@
    [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
- '(custom-enabled-themes (quote (tsdh-dark)))
+ '(custom-enabled-themes '(tsdh-dark))
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   (quote
-    (company-irony projectile-git-autofetch projectile magit clang-format+ clang-format git cmake-mode glsl-mode fireplace column-enforce-mode company-rtags rtags rtags-xref flycheck eyebrowse ctags-update auto-complete-clang-async)))
- '(send-mail-function (quote mailclient-send-it)))
+   '(mu4e-query-fragments mu4e-overview json-mode gdscript-mode zones company-irony projectile-git-autofetch projectile magit clang-format+ clang-format git cmake-mode glsl-mode fireplace column-enforce-mode company-rtags rtags rtags-xref flycheck eyebrowse ctags-update auto-complete-clang-async))
+ '(send-mail-function 'mailclient-send-it))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -40,7 +50,7 @@
 
 ;; Add the hidden directory in emacs home directory to load any plain
 ;; lisp scripts
-(push '"/home/dustin/.emacs_scripts" load-path)
+ (push '"/home/dustin/.emacs_scripts" load-path)
 
 ;; Clang stuff
 (require 'clang-format)
@@ -49,6 +59,10 @@
 (add-hook 'c++-mode-hook 'clang-format+-mode)
 (add-hook 'c-mode-common-hook #'clang-format+-mode)
 
+(add-hook 'c++-mode-hook 
+	  (lambda () (define-key c-mode-base-map (kbd "C-c C-l") 'compile)))
+(add-hook 'c-mode-common-hook 
+(lambda () (define-key c-mode-base-map (kbd "C-c C-l") 'compile)))
 ;; Always have auto-complete mode on
 ;; Auto-complet-mode may interfere with company-mode autocomplete, so disable it
 ;;(add-hook 'after-init-hook 'global-company-mode)
@@ -68,15 +82,15 @@
 ;;(add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; enable semantic mode for source code editing
-(global-ede-mode 1)
-(add-to-list 'semantic-default-submodes 'global-semantic-decoration-mode)
-(add-to-list 'semantic-default-submodes 'global-semantic-idle-local-symbol-highlight-mode)
-(add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
-(add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
-(semantic-mode 1)
-(require 'semantic/sb)
-(require 'semantic/ia)
-(require 'semantic/bovine/gcc)
+;;(global-ede-mode 1)
+;;(add-to-list 'semantic-default-submodes 'global-semantic-decoration-mode)
+;;(add-to-list 'semantic-default-submodes 'global-semantic-idle-local-symbol-highlight-mode)
+;;(add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
+;;(add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+;;(semantic-mode 1)
+;;(require 'semantic/sb)
+;;(require 'semantic/ia)
+;;(require 'semantic/bovine/gcc)
 
 ;; Expands the minibuffer, showing options
 (ivy-mode)
@@ -198,6 +212,8 @@
 (add-to-list 'auto-mode-alist '("\\.frag\\'" . glsl-mode))
 (add-to-list 'auto-mode-alist '("\\.geom\\'" . glsl-mode))
 
+
+
 ;;; Org mode agenda stuff:
 (require 'org)
 (define-key global-map "\C-cl" 'org-store-link)
@@ -207,11 +223,26 @@
 (setq org-agenda-files (list "~/org/home.org"
 			"~/org/work.org"
 			"~/org/school.org"
+			"~/Documents/school/2021 Spring/math342/notes.org"
+			"~/Documents/school/2021 Spring/csc482B/notes.org"
+			"~/Documents/school/2021 Spring/astr102/notes.org"
 			))
+(setq visible-bell 1)
 
 ;;; Magic launch
 (global-set-key (kbd "C-x G") 'magit-status)
 (global-set-key (kbd "C-x g") 'magit-status-here)
 
+;;; For Godot mode
+(require 'gdscript-mode)
+
 ;; Enable auto-revert mode for all buffer (if the file changes, then the buffer reloads it)
 (global-auto-revert-mode t)
+
+;; Enable line-wrapping in at least org-mode
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+;; shortcut to compiling things
+(require 'cc-mode)
+(define-key c-mode-base-map "\C-cb" 'compile)
+
